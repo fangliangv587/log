@@ -163,8 +163,8 @@ class Utils {
         if (!srcFile.exists() || !srcFile.isFile()) return false;
         // 目标文件存在且是文件则返回false
         if (destFile.exists() && destFile.isFile()) return false;
-        // 目标目录不存在返回false
         if (!createOrExistsDir(destFile.getParentFile())) return false;
+        // 目标目录不存在返回false
         try {
             return writeFileFromIS(destFile, new FileInputStream(srcFile), false)
                     && !(isMove && !deleteFile(srcFile));
@@ -184,7 +184,7 @@ class Utils {
     }
 
     public static boolean writeFileFromIS(final File file, final InputStream is, final boolean append) {
-        if (!createOrExistsDir(file) || is == null) return false;
+        if (is == null) return false;
         OutputStream os = null;
         try {
             os = new BufferedOutputStream(new FileOutputStream(file, append));

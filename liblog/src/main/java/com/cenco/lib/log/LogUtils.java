@@ -37,7 +37,7 @@ public class LogUtils {
 
     public static int saveLevel = Level.ERROR;
 
-    public static void init(String tag, int level, String logPath, int days) {
+    public static void init(String tag, int level, String logPath, int days,boolean merge,String suffix) {
         if (isInit) {
             return;
         }
@@ -66,6 +66,8 @@ public class LogUtils {
         }
         FormatStrategy formatStrategy = TxtFormatStrategy.newBuilder()
                 .tag(tag)
+                .suffix(suffix)
+                .merge(merge)
                 .logPath(logPath)
                 .build();
         Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
@@ -91,7 +93,7 @@ public class LogUtils {
     }
 
     public static void init(String generalTag, int level) {
-        init(generalTag, level, Utils.getDefaultLogFilePath(), 10);
+        init(generalTag, level, Utils.getDefaultLogFilePath(), 10,true,".txt");
     }
 
 
@@ -344,14 +346,6 @@ public class LogUtils {
                         continue;
                     }
                     String filePath = anrPath+"/"+lastDate+".txt";
-                    File destFile = new File(filePath);
-                    if (!destFile.exists()){
-                        try {
-                            destFile.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
                     Log.i("libLog","copy目标路径:"+filePath);
                     Utils.copyFile(path,filePath);
 

@@ -88,8 +88,19 @@ public class TxtFormatStrategy implements FormatStrategy {
         LogStrategy logStrategy;
         String tag = "PRETTY_LOGGER";
         String logPath;
+        boolean merge;
+        String suffix;
 
         private Builder() {
+        }
+
+        public Builder merge(boolean m) {
+            merge = m;
+            return this;
+        }
+        public Builder suffix(String m) {
+            suffix = m;
+            return this;
         }
 
         public Builder date(Date val) {
@@ -134,7 +145,7 @@ public class TxtFormatStrategy implements FormatStrategy {
 
                 HandlerThread ht = new HandlerThread("AndroidFileLogger" );
                 ht.start();
-                Handler handler = new DiskLogStrategy.WriteHandler(ht.getLooper(),folder);
+                Handler handler = new DiskLogStrategy.WriteHandler(ht.getLooper(),folder,merge,suffix);
                 logStrategy = new DiskLogStrategy(handler);
             }
             return new TxtFormatStrategy(this);

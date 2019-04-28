@@ -34,24 +34,32 @@ public class DiskLogStrategy implements LogStrategy {
     public static class WriteHandler extends Handler {
 
         private final String folder;
+        private final String suffix;
         private final int maxFileSize;
+        private final boolean merge;
 
-        public WriteHandler(Looper looper, String folder, int maxFileSize) {
+        public WriteHandler(Looper looper, String folder, int maxFileSize,boolean merge,String suffix) {
             super(looper);
             this.folder = folder;
             this.maxFileSize = maxFileSize;
+            this.merge = merge;
+            this.suffix = suffix;
         }
 
-        public WriteHandler(Looper looper, String folder) {
+        public WriteHandler(Looper looper, String folder,boolean merge,String suffix) {
             super(looper);
             this.folder = folder;
             this.maxFileSize = 500 * 1024;
+            this.merge = merge;
+            this.suffix = suffix;
         }
 
         public WriteHandler(Looper looper) {
             super(looper);
             this.folder = Utils.getDefaultLogFilePath();
             this.maxFileSize = 500 * 1024;
+            this.merge = false;
+            this.suffix = ".txt";
         }
 
         @SuppressWarnings("checkstyle:emptyblock")
@@ -68,10 +76,10 @@ public class DiskLogStrategy implements LogStrategy {
             write(content, logFile);
 //            File mainFile = getLogFile(folder, mainTag, "logs");
 //            write(content, mainFile);
-            if (level>=Level.ERROR){
-                File elogFile = getLogFile(folder, "elog", "elog");
-                write(content, elogFile);
-            }
+//            if (level>=Level.ERROR){
+//                File elogFile = getLogFile(folder, "elog", "elog");
+//                write(content, elogFile);
+//            }
         }
 
         private void write(String content, File logFile) {
@@ -109,21 +117,26 @@ public class DiskLogStrategy implements LogStrategy {
 
             String date = Utils.getDateString(new Date());
             String path = folderName + File.separator + date + File.separator + subFolderName;
+            if (merge){
+                path = folderName;
+                fileName = "log";
+            }
             File folder = new File(path);
             if (!folder.exists()) {
                 //TODO: What if folder is not created, what happens then?
                 folder.mkdirs();
+
             }
 
             int newFileCount = 0;
             File newFile;
             File existingFile = null;
 
-            newFile = new File(folder, String.format("%s_%s.txt", fileName, newFileCount));
+            newFile = new File(folder, String.format("%s_%s%s", fileName, newFileCount,suffix));
             while (newFile.exists()) {
                 existingFile = newFile;
                 newFileCount++;
-                newFile = new File(folder, String.format("%s_%s.txt", fileName, newFileCount));
+                newFile = new File(folder, String.format("%s_%s%s", fileName, newFileCount,suffix));
             }
 
             if (existingFile != null) {

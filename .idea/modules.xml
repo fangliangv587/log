@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/libLog.iml" filepath="$PROJECT_DIR$/libLog.iml" />
       <module fileurl="file://$PROJECT_DIR$/liblog/liblog.iml" filepath="$PROJECT_DIR$/liblog/liblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xz-log.iml" filepath="$PROJECT_DIR$/xz-log.iml" />
     </modules>
   </component>
 </project>
