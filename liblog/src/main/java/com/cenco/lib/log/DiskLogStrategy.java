@@ -72,7 +72,7 @@ public class DiskLogStrategy implements LogStrategy {
             String mainTag = getSubTagName(content,true);
 
 
-            File logFile = getLogFile(folder, subTag, subTag);
+            File logFile = getLogFile(folder, subTag, subTag,mainTag);
             write(content, logFile);
 //            File mainFile = getLogFile(folder, mainTag, "logs");
 //            write(content, mainFile);
@@ -113,13 +113,13 @@ public class DiskLogStrategy implements LogStrategy {
         }
 
 
-        private File getLogFile(String folderName, String subFolderName, String fileName) {
+        private File getLogFile(String folderName, String subFolderName, String fileName,String mainTag) {
 
             String date = Utils.getDateString(new Date());
             String path = folderName + File.separator + date + File.separator + subFolderName;
             if (merge){
                 path = folderName;
-                fileName = "log";
+                fileName = mainTag;
             }
             File folder = new File(path);
             if (!folder.exists()) {
