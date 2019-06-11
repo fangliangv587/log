@@ -313,7 +313,7 @@ public class LogUtils {
         Thread anrThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                int delayTime = 10 * 1000;
+                int delayTime = 20 * 1000;
                 String path = "/data/anr/traces.txt";
                 while (true) {
                     try {
@@ -331,6 +331,9 @@ public class LogUtils {
                         continue;
                     }
                     File anrFile = new File(path);
+                    if (!anrFile.exists()){
+                        continue;
+                    }
                     long anrLastModified = anrFile.lastModified();
                     String lastDate = Utils.getFullDateString(new Date(anrLastModified));
                     boolean contains = false;
