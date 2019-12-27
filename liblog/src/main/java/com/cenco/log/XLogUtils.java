@@ -23,7 +23,7 @@ import java.util.List;
  * the default global tag is {@link #commontag}
  */
 
-public class LogUtils {
+public class XLogUtils {
 
     private static String commontag = "";
     private volatile static boolean isInit = false;
