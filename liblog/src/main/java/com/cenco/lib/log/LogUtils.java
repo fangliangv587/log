@@ -80,7 +80,7 @@ public class LogUtils {
         //删除过期log
         deleteTimeOutLog(logPath, days);
         //anr检查
-        checkAnrLog(logPath);
+        //checkAnrLog(logPath);
     }
 
 
