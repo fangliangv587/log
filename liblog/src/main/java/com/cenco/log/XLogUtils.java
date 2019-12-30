@@ -68,9 +68,11 @@ public class XLogUtils {
     public static void init(String generalTag, int level) {
         init(generalTag, level, logPath, maxDay,".txt");
     }
-    public static void init(String generalTag, int level,String suffix) {
+    public static void init(String generalTag, int level,String logPath) {
         init(generalTag, level, logPath, maxDay,".txt");
     }
+
+
 
     private static boolean printLog() {
         return isInit && debug;
@@ -99,7 +101,7 @@ public class XLogUtils {
             log(level, tag1, mes);
         }
 
-        if (level < saveLevel) {
+        if (level >= saveLevel) {
             AsyncLogger.getInstance().Log(mes);
         }
 
