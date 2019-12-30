@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import com.cenco.lib.log.Level;
 import com.cenco.lib.log.LogUtils;
+import com.cenco.log.XLogUtils;
 
 /**
  * Created by Administrator on 2019/2/19.
@@ -15,6 +16,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         String path = Environment.getExternalStorageDirectory().getPath()+"/xz/logapp/";
-        LogUtils.init("testlogapp",Level.VERBOSE,path,10,true,"");
+        XLogUtils.init("testlogapp",Level.VERBOSE,path,10,"");
     }
 }

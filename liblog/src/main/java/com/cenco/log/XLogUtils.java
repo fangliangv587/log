@@ -86,7 +86,7 @@ public class XLogUtils {
         logs(level, null, mes);
     }
 
-    private static void logs(int level, String tag, String mes) {
+    public static void logs(int level, String tag, String mes) {
 
         if (!isInit){
             throw new IllegalArgumentException("请先初始化log");

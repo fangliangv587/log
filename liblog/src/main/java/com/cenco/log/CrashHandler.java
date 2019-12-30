@@ -69,7 +69,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private boolean handleException(Throwable ex) {
 
         String log = LogUtils.getExceptionLog(ex);
-        LogUtils.logs(Level.CRASH,"CrashHandler","异常:"+log);
+        XLogUtils.logs(Level.CRASH,"CrashHandler","发生异常\n"+log);
         return true;
     }
 
