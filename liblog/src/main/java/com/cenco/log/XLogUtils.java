@@ -35,7 +35,7 @@ public class XLogUtils {
     /*tag 过滤集，在过滤集内的tag即不打印，也不保存本地*/
     private static List<String> filters;
     /*是否全局保存*/
-    private static int saveLevel = Level.ERROR;
+    private static int saveLevel = XLevel.ERROR;
 
     public static void init(String tag, int level, String logPath, int days,String suffix) {
         if (isInit) {
@@ -62,7 +62,7 @@ public class XLogUtils {
     }
 
     public static void init(String generalTag) {
-        init(generalTag, Level.ERROR);
+        init(generalTag, XLevel.ERROR);
     }
 
     public static void init(String generalTag, int level) {
@@ -102,27 +102,27 @@ public class XLogUtils {
         }
 
         if (level >= saveLevel) {
-            AsyncLogger.getInstance().Log(mes);
+            AsyncLogger.getInstance().Log(mes,level);
         }
 
     }
 
     private static void log(int level, String tag, String mes) {
         switch (level) {
-            case Level.VERBOSE:
+            case XLevel.VERBOSE:
                 Log.v(tag, mes);
                 break;
-            case Level.DEBUG:
+            case XLevel.DEBUG:
                 Log.d(tag, mes);
                 break;
-            case Level.INFO:
+            case XLevel.INFO:
                 Log.i(tag, mes);
                 break;
-            case Level.WARN:
+            case XLevel.WARN:
                 Log.w(tag, mes);
                 break;
-            case Level.ERROR:
-            case Level.CRASH:
+            case XLevel.ERROR:
+            case XLevel.CRASH:
                 Log.e(tag, mes);
                 break;
             default:
@@ -136,34 +136,34 @@ public class XLogUtils {
 
 
     public static void v(String tag, String mes) {
-        logs(Level.VERBOSE, tag, mes);
+        logs(XLevel.VERBOSE, tag, mes);
     }
 
     public static void d(String tag, String mes) {
-        logs(Level.DEBUG, tag, mes);
+        logs(XLevel.DEBUG, tag, mes);
     }
 
     public static void i(String tag, String mes) {
-        logs(Level.INFO, tag, mes);
+        logs(XLevel.INFO, tag, mes);
     }
 
     public static void w(String tag, String mes) {
-        logs(Level.WARN, tag, mes);
+        logs(XLevel.WARN, tag, mes);
     }
 
     public static void e(String tag, String mes) {
-        logs(Level.ERROR, tag, mes);
+        logs(XLevel.ERROR, tag, mes);
     }
 
     public static void e(String tag, Throwable throwable) {
         String mes = getExceptionMessage(throwable);
-        logs(Level.ERROR, tag, mes);
+        logs(XLevel.ERROR, tag, mes);
     }
 
     public static void e(String tag, String message, Throwable throwable) {
         String mes = getExceptionMessage(throwable);
         mes = message + "\n" + mes;
-        logs(Level.ERROR, tag, mes);
+        logs(XLevel.ERROR, tag, mes);
     }
 
 
@@ -197,7 +197,7 @@ public class XLogUtils {
      * @param throwable
      * @return
      */
-    private static String getExceptionMessage(Throwable throwable) {
+    public static String getExceptionMessage(Throwable throwable) {
         if (throwable == null) {
             return "throwable is null obj !";
         }

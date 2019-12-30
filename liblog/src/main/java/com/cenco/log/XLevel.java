@@ -6,7 +6,7 @@ import com.orhanobut.logger.Logger;
  * Created by Administrator on 2018/5/5.
  */
 
-public class Level {
+public class XLevel {
     public static final int VERBOSE = 0;
     public static final int DEBUG = 1;
     public static final int INFO = 2;

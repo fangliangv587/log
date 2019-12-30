@@ -3,13 +3,11 @@ package com.cenco.log;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -59,8 +57,8 @@ public class AsyncLogger {
     }
 
 
-    private synchronized void Log(String str, int type) {
-        mThread.enqueue(new Msg(str, type));
+    public synchronized void Log(String str, int level) {
+        mThread.enqueue(new Msg(str, level));
     }
 
 
@@ -137,7 +135,7 @@ public class AsyncLogger {
                     while (!mQueue.isEmpty()) {
                         Msg msg = mQueue.poll();
                         String parentPath = getDayFilePath();
-                        recordStringByDate(parentPath, msg.getMsg(), FILE_MAX);
+                        recordStringByDate(parentPath, msg.getMsg(),msg.level, FILE_MAX);
                     }
                     isRunning = false;
                     try {
@@ -183,7 +181,7 @@ public class AsyncLogger {
         }
 
 
-        public void recordStringByDate(String parentPath, String text, long max) {
+        public void recordStringByDate(String parentPath, String text,int level, long max) {
             if (TextUtils.isEmpty(parentPath)) {
                 return;
             }
@@ -191,7 +189,12 @@ public class AsyncLogger {
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            File file = getLogFile(parentPath, "log", suffix, max);
+
+            String fileName = "log";
+            if (level==XLevel.CRASH){
+                fileName = "Crash";
+            }
+            File file = getLogFile(parentPath, fileName, suffix, max);
             try {
                 FileWriter filerWriter = new FileWriter(file, true);
                 BufferedWriter bufWriter = new BufferedWriter(filerWriter);
@@ -245,11 +248,11 @@ public class AsyncLogger {
 
     class Msg {
         private String msg;
-        private int type;
+        private int level;
 
         public Msg(String msg, int type) {
             this.msg = msg;
-            this.type = type;
+            this.level = type;
         }
 
         public String getMsg() {
@@ -260,12 +263,12 @@ public class AsyncLogger {
             this.msg = msg;
         }
 
-        public int getType() {
-            return type;
+        public int getLevel() {
+            return level;
         }
 
-        public void setType(int type) {
-            this.type = type;
+        public void setLevel(int level) {
+            this.level = level;
         }
     }
 
