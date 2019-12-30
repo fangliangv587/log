@@ -3,9 +3,8 @@ package cenco.com.test;
 import android.app.Application;
 import android.os.Environment;
 
-import com.cenco.lib.log.Level;
-import com.cenco.lib.log.LogUtils;
-import com.cenco.log.XLogUtils;
+import com.cenco.log.Level;
+import com.cenco.log.LogUtils;
 
 /**
  * Created by Administrator on 2019/2/19.
@@ -16,6 +15,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         String path = Environment.getExternalStorageDirectory().getPath()+"/xz/";
-        XLogUtils.init("testlogapp",Level.VERBOSE,path,10,"");
+        LogUtils.init("testlogapp",Level.VERBOSE,path,10,"");
     }
 }

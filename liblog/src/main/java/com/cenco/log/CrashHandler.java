@@ -3,8 +3,6 @@ package com.cenco.log;
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
 
-import com.cenco.lib.log.Level;
-import com.cenco.lib.log.LogUtils;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
@@ -68,8 +66,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
      */  
     private boolean handleException(Throwable ex) {
 
-        String log = XLogUtils.getExceptionMessage(ex);
-        XLogUtils.logs(XLevel.CRASH,"CrashHandler","发生异常\n"+log);
+        String log = LogUtils.getExceptionMessage(ex);
+        LogUtils.logs(Level.CRASH,"CrashHandler","发生异常\n"+log);
         return true;
     }
 

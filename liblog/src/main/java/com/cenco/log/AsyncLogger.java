@@ -191,7 +191,7 @@ public class AsyncLogger {
             }
 
             String fileName = "log";
-            if (level==XLevel.CRASH){
+            if (level==Level.CRASH){
                 fileName = "Crash";
             }
             File file = getLogFile(parentPath, fileName, suffix, max);

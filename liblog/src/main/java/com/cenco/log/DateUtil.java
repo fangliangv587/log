@@ -1,7 +1,6 @@
 package com.cenco.log;
 
 
-import com.cenco.lib.log.LogUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -139,7 +138,7 @@ public class DateUtil {
 	public static Date createDate(int year, int month, int day, int hour, int minute, int second){
 	    String err = "请确认年月日有效";
 	    if (year>10000 || year < 0){
-	        LogUtils.w("util",err);
+            LogUtils.w("util",err);
 	        return null;
         }
         if (month<=0 || month>12){

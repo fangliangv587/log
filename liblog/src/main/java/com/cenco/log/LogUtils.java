@@ -1,16 +1,13 @@
-package com.cenco.lib.log;
+package com.cenco.log;
 
 
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.orhanobut.logger.AndroidLogAdapter;
-import com.orhanobut.logger.DiskLogAdapter;
-import com.orhanobut.logger.FormatStrategy;
-import com.orhanobut.logger.Logger;
+
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -29,58 +26,34 @@ import java.util.List;
 public class LogUtils {
 
     private static String commontag = "";
-    private static boolean isInit = false;
-    public static boolean debug = true;
+    private volatile static boolean isInit = false;
+    public  static boolean debug = true;
+    /*日志保存路径*/
+    private static String logPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/log";
+    /*日志最多保存天数*/
+    private static int maxDay = 30;
+    /*tag 过滤集，在过滤集内的tag即不打印，也不保存本地*/
     private static List<String> filters;
-
     /*是否全局保存*/
+    private static int saveLevel = Level.ERROR;
 
-    public static int saveLevel = Level.ERROR;
-
-    public static void init(String tag, int level, String logPath, int days,boolean merge,String suffix) {
+    public static void init(String tag, int level, String logPath, int days,String suffix) {
         if (isInit) {
             return;
         }
-
+        isInit = true;
         saveLevel = level;
-
-        if (tag == null) {
-            tag = commontag;
-        }
-
-        if (tag != null) {
-            commontag = tag;
-        }
-
-
-        //输出到控制台
-        FormatStrategy strategy = SimpleFormatStrategy.newBuilder()
-                .tag(tag)
-                .build();
-        Logger.addLogAdapter(new AndroidLogAdapter(strategy));
-
-
-        //保存到sd卡
-        if (logPath == null) {
-            logPath = Utils.getDefaultLogFilePath();
-        }
-        FormatStrategy formatStrategy = TxtFormatStrategy.newBuilder()
-                .tag(tag)
-                .suffix(suffix)
-                .merge(merge)
-                .logPath(logPath)
-                .build();
-        Logger.addLogAdapter(new DiskLogAdapter(formatStrategy));
+        commontag = tag;
 
         //异常捕获
         CrashHandler.getInstance().init();
 
-        isInit = true;
+        //日志保存设置
+        AsyncLogger.getInstance().setLogPath(logPath);
+        AsyncLogger.getInstance().setSuffix(suffix);
 
         //删除过期log
         deleteTimeOutLog(logPath, days);
-        //anr检查
-        //checkAnrLog(logPath);
     }
 
 
@@ -93,36 +66,45 @@ public class LogUtils {
     }
 
     public static void init(String generalTag, int level) {
-        init(generalTag, level, Utils.getDefaultLogFilePath(), 10,true,".txt");
+        init(generalTag, level, logPath, maxDay,".txt");
     }
+    public static void init(String generalTag, int level,String logPath) {
+        init(generalTag, level, logPath, maxDay,".txt");
+    }
+
 
 
     private static boolean printLog() {
         return isInit && debug;
     }
 
-    public static void logs(int level, String mes) {
+    public static void filters(String... filter) {
+        filters = Arrays.asList(filter);
+    }
+
+    private static void logs(int level, String mes) {
         logs(level, null, mes);
     }
 
     public static void logs(int level, String tag, String mes) {
 
+        if (!isInit){
+            throw new IllegalArgumentException("请先初始化log");
+        }
+
         if (filters != null && filters.contains(tag)) {
             return;
         }
 
-        if (!printLog()) {
+        if (printLog()) {
             String tag1 = getFormatTag(tag);
             log(level, tag1, mes);
-            return;
         }
 
-        if (level < saveLevel) {
-            String tag1 = getFormatTag(tag);
-            log(level, tag1, mes);
-            return;
+        if (level >= saveLevel) {
+            AsyncLogger.getInstance().Log(mes,level);
         }
-        logger(level, tag, mes);
+
     }
 
     private static void log(int level, String tag, String mes) {
@@ -150,34 +132,7 @@ public class LogUtils {
     }
 
 
-    private static void logger(int level, String tag, String mes) {
 
-        if (!TextUtils.isEmpty(tag)) {
-            Logger.t(tag);
-        }
-
-        switch (level) {
-            case Level.VERBOSE:
-                Logger.v(mes);
-                break;
-            case Level.DEBUG:
-                Logger.d(mes);
-                break;
-            case Level.INFO:
-                Logger.i(mes);
-                break;
-            case Level.WARN:
-                Logger.w(mes);
-                break;
-            case Level.ERROR:
-            case Level.CRASH:
-                Logger.e(mes);
-                break;
-            default:
-                Logger.d(mes);
-                break;
-        }
-    }
 
 
     public static void v(String tag, String mes) {
@@ -201,12 +156,12 @@ public class LogUtils {
     }
 
     public static void e(String tag, Throwable throwable) {
-        String mes = getExceptionLog(throwable);
+        String mes = getExceptionMessage(throwable);
         logs(Level.ERROR, tag, mes);
     }
 
     public static void e(String tag, String message, Throwable throwable) {
-        String mes = getExceptionLog(throwable);
+        String mes = getExceptionMessage(throwable);
         mes = message + "\n" + mes;
         logs(Level.ERROR, tag, mes);
     }
@@ -233,11 +188,16 @@ public class LogUtils {
     }
 
     public static void e(Throwable throwable) {
-        String log = getExceptionLog(throwable);
+        String log = getExceptionMessage(throwable);
         e(log);
     }
 
-    public static String getExceptionLog(Throwable throwable) {
+    /**
+     * 格式化异常信息
+     * @param throwable
+     * @return
+     */
+    public static String getExceptionMessage(Throwable throwable) {
         if (throwable == null) {
             return "throwable is null obj !";
         }
@@ -254,8 +214,17 @@ public class LogUtils {
         return result;
     }
 
-    public static String getFormatTag(String tag) {
-        if (!TextUtils.isEmpty(tag) && !TextUtils.equals(commontag, tag)) {
+    /**
+     * 拼接tag
+     * @param tag
+     * @return
+     */
+    private static String getFormatTag(String tag) {
+
+        if (TextUtils.isEmpty(tag) && TextUtils.isEmpty(commontag)){
+            return "notag";
+        }
+        if (!TextUtils.isEmpty(tag)) {
             if (TextUtils.isEmpty(commontag)) {
                 return tag;
             } else {
@@ -267,9 +236,7 @@ public class LogUtils {
     }
 
 
-    public static void filters(String... filter) {
-        filters = Arrays.asList(filter);
-    }
+
 
     /**
      * 删除超期文件
@@ -307,55 +274,5 @@ public class LogUtils {
 
     }
 
-    private static void checkAnrLog(final String logPath) {
-        final String anrPath = logPath.endsWith("/") ? logPath + "anr" : logPath + "/anr";
-
-        Thread anrThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int delayTime = 20 * 1000;
-                String path = "/data/anr/traces.txt";
-                while (true) {
-                    try {
-                        Thread.sleep(delayTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                    File file = new File(anrPath);
-                    if (!file.exists()) {
-                        file.mkdirs();
-                    }
-                    File[] files = file.listFiles();
-                    if (files==null ){
-                        continue;
-                    }
-                    File anrFile = new File(path);
-                    if (!anrFile.exists()){
-                        continue;
-                    }
-                    long anrLastModified = anrFile.lastModified();
-                    String lastDate = Utils.getFullDateString(new Date(anrLastModified));
-                    boolean contains = false;
-                    for (int i=0;i<files.length;i++){
-                        String name = files[i].getName();
-                        if (name.contains(lastDate)){
-                            contains = true;
-                            break;
-                        }
-                    }
-
-                    if (contains){
-                        continue;
-                    }
-                    String filePath = anrPath+"/"+lastDate+".txt";
-                    Log.i("libLog","copy目标路径:"+filePath);
-                    Utils.copyFile(path,filePath);
-
-                }
-            }
-        });
-        anrThread.start();
-    }
 
 }
