@@ -89,7 +89,7 @@ public class LogUtils {
     public static void logs(int level, String tag, String mes) {
 
         if (!isInit){
-            throw new IllegalArgumentException("请先初始化log");
+            return;
         }
 
         if (filters != null && filters.contains(tag)) {
