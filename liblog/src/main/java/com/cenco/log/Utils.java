@@ -53,7 +53,7 @@ class Utils {
     }
 
     public static Date getDate(String str){
-        String format = "yyyy-MM-dd";
+        String format = DateUtil.FORMAT_YMD2;
         if (str == null){
             return null;
         }
