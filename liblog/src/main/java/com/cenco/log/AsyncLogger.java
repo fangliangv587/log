@@ -195,10 +195,11 @@ public class AsyncLogger {
                 fileName = "Crash";
             }
             File file = getLogFile(parentPath, fileName, suffix, max);
+            String dateString = DateUtil.getDateString();
             try {
                 FileWriter filerWriter = new FileWriter(file, true);
                 BufferedWriter bufWriter = new BufferedWriter(filerWriter);
-                bufWriter.write(text);
+                bufWriter.write(dateString + " "+ text);
                 bufWriter.newLine();
                 bufWriter.close();
                 filerWriter.close();

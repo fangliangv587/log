@@ -14,7 +14,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        String path = Environment.getExternalStorageDirectory().getPath()+"/xz/";
+        String path = Environment.getExternalStorageDirectory().getPath()+"/1xz/";
         LogUtils.init("testlogapp",Level.VERBOSE,path,10,"");
     }
 }
