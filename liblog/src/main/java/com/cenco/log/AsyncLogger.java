@@ -53,12 +53,12 @@ public class AsyncLogger {
     }
 
     public void Log(String str) {
-        Log(str, LOG_TYPE);
+        Log("",str, LOG_TYPE);
     }
 
 
-    public synchronized void Log(String str, int level) {
-        mThread.enqueue(new Msg(str, level));
+    public synchronized void Log(String tag,String str, int level) {
+        mThread.enqueue(new Msg(tag,str, level));
     }
 
 
@@ -135,7 +135,7 @@ public class AsyncLogger {
                     while (!mQueue.isEmpty()) {
                         Msg msg = mQueue.poll();
                         String parentPath = getDayFilePath();
-                        recordStringByDate(parentPath, msg.getMsg(),msg.level, FILE_MAX);
+                        recordStringByDate(parentPath,msg.getTag(), msg.getMsg(),msg.level, FILE_MAX);
                     }
                     isRunning = false;
                     try {
@@ -181,7 +181,7 @@ public class AsyncLogger {
         }
 
 
-        public void recordStringByDate(String parentPath, String text,int level, long max) {
+        public void recordStringByDate(String parentPath,String tag, String text,int level, long max) {
             if (TextUtils.isEmpty(parentPath)) {
                 return;
             }
@@ -199,7 +199,7 @@ public class AsyncLogger {
             try {
                 FileWriter filerWriter = new FileWriter(file, true);
                 BufferedWriter bufWriter = new BufferedWriter(filerWriter);
-                bufWriter.write(dateString + " "+ text);
+                bufWriter.write(dateString + " "+tag+":"+ text);
                 bufWriter.newLine();
                 bufWriter.close();
                 filerWriter.close();
@@ -248,12 +248,22 @@ public class AsyncLogger {
     }
 
     class Msg {
+        private String tag;
         private String msg;
         private int level;
 
-        public Msg(String msg, int type) {
+        public Msg(String tag,String msg, int type) {
+            this.tag = tag;
             this.msg = msg;
             this.level = type;
+        }
+
+        public String getTag() {
+            return tag;
+        }
+
+        public void setTag(String tag) {
+            this.tag = tag;
         }
 
         public String getMsg() {

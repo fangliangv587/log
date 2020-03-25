@@ -102,7 +102,10 @@ public class LogUtils {
         }
 
         if (level >= saveLevel) {
-            AsyncLogger.getInstance().Log(mes,level);
+            if (TextUtils.isEmpty(tag)){
+                tag =commontag;
+            }
+            AsyncLogger.getInstance().Log(tag,mes,level);
         }
 
     }
