@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.cenco.log.LogUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -63,5 +64,21 @@ public class LogActivity extends FragmentActivity {
         list1.add(2);
 
         Collections.emptyList();
+    }
+
+    public void test(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    LogUtils.w("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                }
+            }
+        }).start();
     }
 }

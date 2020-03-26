@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class AsyncLogger {
 
-    private static long FILE_MAX = 4096 * 4096;
+    private static long FILE_MAX = 1024 * 1024;//1024k
     private static long FILE_CPM_MAX = 4096 * 4096;
     private final static int LOG_TYPE = 1;
     private final static int maxDay = 30;
