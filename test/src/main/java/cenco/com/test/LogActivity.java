@@ -1,6 +1,8 @@
 package cenco.com.test;
 
 import android.Manifest;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.disposables.Disposable;
+
 public class LogActivity extends FragmentActivity {
 
     @Override
@@ -26,21 +30,23 @@ public class LogActivity extends FragmentActivity {
 //        int a = 0;
 //        int b = 5/a;
         permission();
+
+
     }
 
     private void permission() {
         final RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions
+        Disposable testlogapp = rxPermissions
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_PHONE_STATE)
-                .subscribe(result->{
-                    Log.i("testlogapp","permission result:"+result);
-                    if (result){
+                .subscribe(result -> {
+                    Log.i("testlogapp", "permission result:" + result);
+                    if (result) {
                         init();
-                    }else {
+                    } else {
 
                     }
-                });
+                }, throwable -> LogUtils.e(throwable));
     }
 
     private void init() {
@@ -67,17 +73,15 @@ public class LogActivity extends FragmentActivity {
     }
 
     public void test(View view) {
+
+//        int a = 0;
+//        int b = 5/a;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    LogUtils.w("testaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-                }
+                int a = 0;
+                int b = 5/a;
             }
         }).start();
     }

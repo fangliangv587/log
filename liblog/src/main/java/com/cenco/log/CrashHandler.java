@@ -20,10 +20,10 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private UncaughtExceptionHandler mDefaultHandler;
   
     private static CrashHandler instance = new CrashHandler();
+    private boolean interceptError;
 
 
-
-    /** 保证只有一个CrashHandler实例 */  
+    /** 保证只有一个CrashHandler实例 */
     private CrashHandler() {  
     }  
   
@@ -36,7 +36,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
      * 初始化 
      *  
      */
-    public void init() {
+    public void init(boolean interceptError) {
+        this. interceptError = interceptError;
         // 获取系统默认的UncaughtException处理器
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();  
         // 设置该CrashHandler为程序的默认处理器  
@@ -51,7 +52,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
 
         handleException(ex);
 
-        if (mDefaultHandler != null) {
+        if (mDefaultHandler != null && !interceptError) {
             SystemClock.sleep(2000);
             mDefaultHandler.uncaughtException(thread, ex);  
         }
@@ -67,7 +68,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private boolean handleException(Throwable ex) {
 
         String log = LogUtils.getExceptionMessage(ex);
-        LogUtils.logs(Level.CRASH,"CrashHandler","发生异常\n"+log);
+        LogUtils.logs(Level.CRASH,"CrashHandler","发生异常(子)\n"+log);
         return true;
     }
 

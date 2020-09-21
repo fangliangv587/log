@@ -15,6 +15,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         String path = Environment.getExternalStorageDirectory().getPath()+"/1xz/";
-        LogUtils.init("testlogapp",Level.VERBOSE,path,10,"");
+        LogUtils.init("testlogapp",Level.VERBOSE,path,10,"",true);
     }
 }

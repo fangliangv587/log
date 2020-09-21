@@ -2,6 +2,8 @@ package com.cenco.log;
 
 
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -37,7 +39,7 @@ public class LogUtils {
     /*是否全局保存*/
     private static int saveLevel = Level.ERROR;
 
-    public static void init(String tag, int level, String logPath, int days,String suffix) {
+    public static void init(String tag, int level, String logPath, int days,String suffix,boolean interceptError) {
         if (isInit) {
             return;
         }
@@ -46,7 +48,10 @@ public class LogUtils {
         commontag = tag;
 
         //异常捕获
-        CrashHandler.getInstance().init();
+        CrashHandler.getInstance().init(interceptError);
+        if (interceptError){
+            interceptMainError();
+        }
 
         //日志保存设置
         AsyncLogger.getInstance().setLogPath(logPath);
@@ -54,6 +59,26 @@ public class LogUtils {
 
         //删除过期log
         deleteTimeOutLog(logPath, days);
+    }
+
+    /**
+     * 拦截主线程异常，子线程异常由crashhandler拦截
+     */
+    private static void interceptMainError() {
+        new Handler(Looper.getMainLooper())
+                .post(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true){
+                            try {
+                                Looper.loop();
+                            } catch (Exception e) {
+                                String log = LogUtils.getExceptionMessage(e);
+                                LogUtils.logs(Level.CRASH,"CrashHandler","发生异常(主)\n"+log);
+                            }
+                        }
+                    }
+                });
     }
 
 
@@ -66,10 +91,10 @@ public class LogUtils {
     }
 
     public static void init(String generalTag, int level) {
-        init(generalTag, level, logPath, maxDay,".txt");
+        init(generalTag, level, logPath, maxDay,".txt",false);
     }
     public static void init(String generalTag, int level,String logPath) {
-        init(generalTag, level, logPath, maxDay,".txt");
+        init(generalTag, level, logPath, maxDay,".txt",false);
     }
 
 
@@ -142,7 +167,17 @@ public class LogUtils {
         logs(Level.VERBOSE, tag, mes);
     }
 
+    public static void v(String tag, Throwable throwable) {
+        String mes = getExceptionMessage(throwable);
+        logs(Level.VERBOSE, tag, mes);
+    }
+
     public static void d(String tag, String mes) {
+        logs(Level.DEBUG, tag, mes);
+    }
+
+    public static void d(String tag, Throwable throwable) {
+        String mes = getExceptionMessage(throwable);
         logs(Level.DEBUG, tag, mes);
     }
 
@@ -150,9 +185,20 @@ public class LogUtils {
         logs(Level.INFO, tag, mes);
     }
 
+    public static void i(String tag, Throwable throwable) {
+        String mes = getExceptionMessage(throwable);
+        logs(Level.INFO, tag, mes);
+    }
+
     public static void w(String tag, String mes) {
         logs(Level.WARN, tag, mes);
     }
+
+    public static void w(String tag, Throwable throwable) {
+        String mes = getExceptionMessage(throwable);
+        logs(Level.WARN, tag, mes);
+    }
+
 
     public static void e(String tag, String mes) {
         logs(Level.ERROR, tag, mes);

@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/liblog/liblog.iml" filepath="$PROJECT_DIR$/liblog/liblog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/log.iml" filepath="$PROJECT_DIR$/.idea/modules/log.iml" group="log" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/liblog/log-liblog.iml" filepath="$PROJECT_DIR$/.idea/modules/liblog/log-liblog.iml" group="log/liblog" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/test/log-test.iml" filepath="$PROJECT_DIR$/.idea/modules/test/log-test.iml" group="log/test" />
       <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
       <module fileurl="file://$PROJECT_DIR$/xz-log.iml" filepath="$PROJECT_DIR$/xz-log.iml" />
     </modules>
